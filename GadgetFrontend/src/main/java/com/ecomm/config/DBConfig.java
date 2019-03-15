@@ -11,6 +11,8 @@ import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.ecomm.model.Category;
+
 @Configuration
 @EnableTransactionManagement
 @ComponentScan("com.ecomm.config")
@@ -27,25 +29,30 @@ public class DBConfig {
 		dataSource.setPassword("ram");
 	
 		System.out.println("== DataSource Object created ==");
-		return (DataSource) dataSource;     /// Don't use the type cast 
+		return (DataSource)dataSource;     /// Don't use the type cast 
 		
 	}
 	
-	@Bean (name="SessionFactory")
+	@Bean (name="sessionFactory")
 	public SessionFactory getSessionFactory() 
 	{
 		
 		Properties hibernateProp=new Properties();
 		hibernateProp.put("hibernate.hbm2ddl.auto",  "update");
 		hibernateProp.put("hibernate.dialect",  "org.hibernate.dialect.H2Dialect");
+		
 		LocalSessionFactoryBuilder factory=new LocalSessionFactoryBuilder(null);
-		factory.addProperties((Properties) hibernateProp);
+		factory.addProperties(hibernateProp);
+		
+		factory.addAnnotatedClass(Category.class);
+		
 		SessionFactory sessionfactory=factory.buildSessionFactory();
+		System.out.println("********** SessionFactory Object Created ***********");
 		return sessionfactory;
 		
 	}
 	
-	@Bean
+	@Bean("txManager")
 	public HibernateTransactionManager getHibernateTransactionManager(SessionFactory sessionFactory) 
 	{
 		System.out.println("********** Hibernate Transaction Manager ***********");
